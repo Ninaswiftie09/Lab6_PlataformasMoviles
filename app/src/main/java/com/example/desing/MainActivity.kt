@@ -8,8 +8,8 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -33,6 +33,7 @@ class MainActivity : ComponentActivity() {
                 val navController = rememberNavController()
                 NavHost(navController = navController, startDestination = "splash_screen") {
                     composable("splash_screen") { SplashScreen(navController) }
+                    composable("menu") { MenuScreen(navController) }
                     composable("home") { HomeScreen() }
                 }
             }
@@ -46,7 +47,7 @@ fun SplashScreen(navController: NavHostController) {
         modifier = Modifier
             .fillMaxSize()
             .background(Color(0xFFEF5350))
-            .clickable { navController.navigate("home") },
+            .clickable { navController.navigate("menu") },
         contentAlignment = Alignment.Center
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -62,6 +63,68 @@ fun SplashScreen(navController: NavHostController) {
                 fontWeight = FontWeight.Bold,
                 color = Color.White
             )
+        }
+    }
+}
+
+@Composable
+fun MenuScreen(navController: NavHostController) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color(0xFFFF6F61))
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            horizontalAlignment = Alignment.Start
+        ) {
+            Text(
+                text = "Popular Recipes",
+                fontSize = 24.sp,
+                color = Color.White,
+                modifier = Modifier
+                    .clickable { navController.navigate("home") }
+                    .padding(vertical = 16.dp)
+            )
+            Text(
+                text = "Saved Recipes",
+                fontSize = 24.sp,
+                color = Color.White,
+                modifier = Modifier.padding(vertical = 16.dp)
+            )
+            Text(
+                text = "Shopping List",
+                fontSize = 24.sp,
+                color = Color.White,
+                modifier = Modifier.padding(vertical = 16.dp)
+            )
+            Text(
+                text = "Settings",
+                fontSize = 24.sp,
+                color = Color.White,
+                modifier = Modifier.padding(vertical = 16.dp)
+            )
+            Spacer(modifier = Modifier.weight(1f))
+
+
+            Row(
+                modifier = Modifier.padding(vertical = 16.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.taylor),
+                    contentDescription = "Profile Picture",
+                    modifier = Modifier.size(50.dp)
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    text = "Taylor Swift",
+                    fontSize = 18.sp,
+                    color = Color.White
+                )
+            }
         }
     }
 }
