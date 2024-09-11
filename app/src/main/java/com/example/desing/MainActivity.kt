@@ -8,6 +8,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
+
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -16,7 +17,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
@@ -24,10 +24,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.desing.ui.theme.DesingTheme
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
-
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -39,10 +35,10 @@ class MainActivity : ComponentActivity() {
                     composable("splash_screen") { SplashScreen(navController) }
                     composable("menu") { MenuScreen(navController) }
                     composable("home") { HomeScreen(navController) }
-                    composable("arroz_detail") { ArrozDetailScreen(navController) }
+                    composable("recipe_detail") { RecipeDetailScreen(navController) }
                     composable("add_comment") { AddCommentScreen(navController) }
+                    composable("dialog_screen") { DialogScreen(navController) }
                 }
-
             }
         }
     }
@@ -115,7 +111,6 @@ fun MenuScreen(navController: NavHostController) {
             )
             Spacer(modifier = Modifier.weight(1f))
 
-
             Row(
                 modifier = Modifier.padding(vertical = 16.dp),
                 verticalAlignment = Alignment.CenterVertically
@@ -162,63 +157,13 @@ fun HomeScreen(navController: NavHostController) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.White)
             .padding(16.dp)
     ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            listOf("Appetizers", "Entrees", "Dessert").forEach { category ->
-                Text(
-                    text = category,
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = if (category == "Entrees") Color.Black else Color.Gray,
-                    modifier = Modifier.clickable { }
-                )
-            }
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Column(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            val featuredIndex = 2
-            Image(
-                painter = painterResource(id = recetas[featuredIndex]),
-                contentDescription = nombresRecetas[featuredIndex],
-                modifier = Modifier
-                    .height(250.dp)
-                    .fillMaxWidth()
-                    .background(Color.LightGray)
-                    .clickable { navController.navigate("arroz_detail") },  // Navegar a la pantalla de detalle de arroz
-                contentScale = ContentScale.Crop
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            Text(
-                text = nombresRecetas[featuredIndex],
-                fontSize = 24.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color.Black
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceAround
-            ) {
-                Text(text = "⏱ ${tiemposCoccion[featuredIndex]}")
-                Text(text = "❤️ ${likesRecetas[featuredIndex]}")
-                Text(text = "⭐ ${reviewsRecetas[featuredIndex]} Reviews")
-            }
-        }
-
+        Text(
+            text = "Recetas Populares",
+            fontSize = 24.sp,
+            fontWeight = FontWeight.Bold
+        )
         Spacer(modifier = Modifier.height(16.dp))
 
         LazyRow(
@@ -232,7 +177,7 @@ fun HomeScreen(navController: NavHostController) {
                         .width(150.dp)
                         .clickable {
                             if (nombresRecetas[index] == "Arroz") {
-                                navController.navigate("arroz_detail")
+                                navController.navigate("recipe_detail")
                             }
                         }
                 ) {
@@ -260,225 +205,91 @@ fun HomeScreen(navController: NavHostController) {
 
 
 
-
-
-@Preview(showBackground = true)
 @Composable
-fun DefaultPreview() {
-    DesingTheme {
-        val navController = rememberNavController()
-        SplashScreen(navController)
-    }
-}
+fun RecipeDetailScreen(navController: NavHostController) {
+    val (commentText, setCommentText) = remember { mutableStateOf("") }
 
-
-@Composable
-fun RecipeDetailScreen(
-    receta: Int,
-    nombreReceta: String,
-    descripcion: String,
-    estrellas: Int,
-    tiempo: String,
-    likes: Int,
-    ingredientes: List<String>,
-    preparacion: List<String>
-) {
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp)
-            .background(Color.White)
     ) {
+        // Imagen de la receta
         Image(
-            painter = painterResource(id = receta),
-            contentDescription = nombreReceta,
+            painter = painterResource(id = R.drawable.arroz),
+            contentDescription = "Arroz",
             modifier = Modifier
-                .height(250.dp)
                 .fillMaxWidth()
+                .height(250.dp)
                 .background(Color.LightGray),
             contentScale = ContentScale.Crop
         )
-
         Spacer(modifier = Modifier.height(16.dp))
 
+        // Titulo de la receta
         Text(
-            text = nombreReceta,
+            text = "Arroz",
             fontSize = 24.sp,
-            fontWeight = FontWeight.Bold,
-            color = Color.Black
+            fontWeight = FontWeight.Bold
         )
-
         Spacer(modifier = Modifier.height(8.dp))
 
+        // Sección de comentarios
         Text(
-            text = descripcion,
-            fontSize = 16.sp,
-            color = Color.Gray
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Text(text = "⏱ $tiempo")
-            Text(text = "❤️ $likes Likes")
-            Text(text = "⭐ $estrellas Estrellas")
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Text(
-            text = "Ingredientes",
-            fontSize = 20.sp,
-            fontWeight = FontWeight.Bold,
-            color = Color.Black
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        ingredientes.forEach { ingrediente ->
-            Text(
-                text = "- $ingrediente",
-                fontSize = 16.sp,
-                color = Color.Black
-            )
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Text(
-            text = "Preparación",
-            fontSize = 20.sp,
-            fontWeight = FontWeight.Bold,
-            color = Color.Black
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        preparacion.forEachIndexed { index, paso ->
-            Text(
-                text = "${index + 1}. $paso",
-                fontSize = 16.sp,
-                color = Color.Black
-            )
-            Spacer(modifier = Modifier.height(4.dp))
-        }
-    }
-}
-
-
-
-@Composable
-fun ArrozDetailScreen(navController: NavHostController) {
-    val nombreReceta = "Arroz"
-    val descripcion = "Un delicioso arroz al estilo tradicional, perfecto como acompañamiento para cualquier plato."
-    val estrellas = 4
-    val tiempo = "30min"
-    val likes = 120
-    val ingredientes = listOf("1 taza de arroz", "2 tazas de agua", "1 cucharadita de sal", "2 cucharadas de aceite")
-    val preparacion = listOf(
-        "Lavar bien el arroz bajo agua fría.",
-        "En una olla, calentar el aceite a fuego medio.",
-        "Agregar el arroz y saltearlo por 2-3 minutos.",
-        "Añadir el agua y la sal, llevar a ebullición.",
-        "Reducir el fuego, tapar la olla y cocinar a fuego lento por 18-20 minutos.",
-        "Retirar del fuego y dejar reposar tapado por 5 minutos antes de servir."
-    )
-
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
-    ) {
-        RecipeDetailScreen(
-            receta = R.drawable.arroz,
-            nombreReceta = nombreReceta,
-            descripcion = descripcion,
-            estrellas = estrellas,
-            tiempo = tiempo,
-            likes = likes,
-            ingredientes = ingredientes,
-            preparacion = preparacion,
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Text(
-            text = "Comentarios",
+            text = "Comentarios:",
             fontSize = 20.sp,
             fontWeight = FontWeight.Bold
         )
-
         Spacer(modifier = Modifier.height(8.dp))
 
-        LazyColumn {
-            items(5) { index ->
-                CommentRow(
-                    userName = "Usuario $index",
-                    commentDate = "2024-09-10",
-                    commentText = "Comentario $index: Muy buena receta, la recomiendo."
+        // Comentarios (simulación)
+        Column {
+            Row(
+                modifier = Modifier.padding(vertical = 8.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.taylor),
+                    contentDescription = "Usuario",
+                    modifier = Modifier.size(40.dp)
                 )
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.width(8.dp))
+                Column {
+                    Text(text = "Juan Pérez", fontWeight = FontWeight.Bold)
+                    Text(text = "¡Delicioso!", fontSize = 14.sp)
+                    Text(text = "01/01/2024", fontSize = 12.sp, color = Color.Gray)
+                }
             }
+
         }
 
         Spacer(modifier = Modifier.height(16.dp))
 
+        // Sección para agregar un comentario
+        TextField(
+            value = commentText,
+            onValueChange = { setCommentText(it) },
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(150.dp)
+                .background(Color(0xFFE0E0E0))
+                .padding(8.dp),
+            singleLine = false,
+            label = { Text("Tu comentario") }
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+
         Button(
-            onClick = { navController.navigate("add_comment") },
+            onClick = { /* Acción para enviar el comentario */ },
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text(text = "Agregar Comentario")
+            Text("Enviar Comentario")
         }
     }
 }
-
-
-@Composable
-fun CommentRow(
-
-    userName: String,
-    commentDate: String,
-    commentText: String
-) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(Color.LightGray)
-            .padding(8.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Spacer(modifier = Modifier.width(8.dp))
-        Column {
-            Text(
-                text = userName,
-                fontWeight = FontWeight.Bold
-            )
-            Text(
-                text = commentDate,
-                fontSize = 12.sp,
-                color = Color.Gray
-            )
-            Spacer(modifier = Modifier.height(4.dp))
-            Text(text = commentText)
-        }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun ArrozDetailScreenPreview() {
-    val navController = rememberNavController()
-    ArrozDetailScreen(navController = navController)
-}
-
-
-
 @Composable
 fun AddCommentScreen(navController: NavHostController) {
-    var commentText by remember { mutableStateOf("") }
+    val (commentText, setCommentText) = remember { mutableStateOf("") }
 
     Column(
         modifier = Modifier
@@ -487,28 +298,82 @@ fun AddCommentScreen(navController: NavHostController) {
     ) {
         Text(
             text = "Agregar Comentario",
-            fontSize = 20.sp,
+            fontSize = 24.sp,
             fontWeight = FontWeight.Bold
         )
-
         Spacer(modifier = Modifier.height(16.dp))
 
-        OutlinedTextField(
+        TextField(
             value = commentText,
-            onValueChange = { commentText = it },
-            label = { Text("Escribe tu comentario") },
-            modifier = Modifier.fillMaxWidth()
+            onValueChange = { setCommentText(it) },
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(150.dp)
+                .background(Color(0xFFE0E0E0))
+                .padding(8.dp),
+            singleLine = false,
+            label = { Text("Escribe tu comentario aquí") }
         )
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Button(
+            onClick = { /* Acción para enviar el comentario */ },
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text("Enviar Comentario")
+        }
 
         Spacer(modifier = Modifier.height(16.dp))
 
         Button(
-            onClick = {
-                navController.popBackStack() // Regresar a la pantalla anterio
-            },
+            onClick = { navController.navigate("recipe_detail") },
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text(text = "Enviar Comentario")
+            Text("Volver")
         }
+    }
+}
+
+@Composable
+fun DialogScreen(navController: NavHostController) {
+    var showDialog by remember { mutableStateOf(true) }
+
+    if (showDialog) {
+        AlertDialog(
+            onDismissRequest = { showDialog = false },
+            title = { Text("¡Lo lograste!") },
+            text = {
+                Column {
+                    Text("¡Tu receta ha sido guardada exitosamente!")
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Row(
+                        horizontalArrangement = Arrangement.SpaceAround,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Button(onClick = {
+                            // Acción para compartir
+                            showDialog = false
+                        }) {
+                            Text("Let your friends know about it")
+                        }
+                        Button(onClick = {
+                            navController.navigate("add_comment")
+                            showDialog = false
+                        }) {
+                            Text("Leave a review")
+                        }
+                    }
+                }
+            },
+            confirmButton = {
+                Button(onClick = { showDialog = false }) {
+                    Text("OK")
+                }
+            }
+        )
+    }
+
+    Button(onClick = { showDialog = true }) {
+        Text("Show Dialog")
     }
 }
